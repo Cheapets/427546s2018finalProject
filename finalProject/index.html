@@ -1,0 +1,94 @@
+<!--
+	Name: Sonny Chea
+	Date: 04-04-18
+	Professor: Dr. Haim Levkowitz
+	COM.4270 Computer Graphics I
+    Assignment: The purpose of this part for the final assignment is to complete the first part
+    which is Modeling, to create and store a 3D object by any number of these means; Drawing three
+    2D "elevations" (front, top,side) while implementing any reasonable generic object but in this
+    case its just for the house.
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+            <title>3D Projections with Three.js</title>
+            <style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+            </style>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+            <script src="Scene.js"></script>
+	</head>
+	<body>
+            <label for="Front">Orthographic: Front Perspective</label>
+            <input id="Front" type="button" value="Front" onclick="Ofront();">
+            <label for="Side">Side Perspective</label>
+            <input id="Side" type="button" value="Side" onclick="Oside();">
+            <label for="Top">Top Perspective</label>
+            <input id="Top" type="button" value="Top" onclick="Otop();">
+            <p></p>
+            
+            <label for="OnePoint">Projection: One Point</label>
+            <input id="OnePoint" type="button" value="One point projection" onclick="OnePprojection();">
+            <label for="TwoPoint">Two Point</label>
+            <input id="TwoPoint" type="button" value="Two point projection" onclick="TwoPprojection();">
+            <label for="ThreePoint">Three Point</label>
+            <input id="ThreePoint" type="button" value="Three point projection" onclick="ThreePprojection();">
+            <p></p>
+            
+            <label for="oblique">Oblique View</label>
+            <input id="oblique" type="button" value="oblique" onclick="Oblique();">
+            <label for="top_inc">Increment: Top Oblique angle</label>
+            <input id="top_inc" type="button" value="inc obl top angle" onclick="IncreaseT();">
+            <label for="side_inc">Side Oblique angle</label>
+            <input id="side_inc" type="button" value="inc obl side angle" onclick="IncreaseS();">
+            <p></p>
+            
+            <label for="top_dec">Decrement: Top Oblique angle</label>
+            <input id="top_dec" type="button" value="dec obl top angle" onclick="DecreaseT();">
+            <label for="side_dec">Side Oblique angle</label>
+            <input id="side_dec" type="button" value="dec obl side angle" onclick="DecreaseS();">
+            <p></p>
+            
+            <label for="isometric">Isometric Projection</label>
+            <input id="isometric" type="button" value="Isometric" onclick="Isometric();">
+            <label for="dimetric">Dimetric Projection</label>
+            <input id="dimetric" type="button" value="Dimetric" onclick="Dimetric();">
+            <label for="trimetric">Trimetric Projection</label>
+            <input id="trimetric" type="button" value="Trimetric" onclick="Trimetric();">
+            <p></p>
+            
+            <label for="xtrans">X Transformation</label>
+            <input type="range" id="xtrans" value="0">
+            <label for="ytrans">Y Transformation</label>
+            <input type="range" id="ytrans" value="0">
+            <label for="ztrans">Z Transformation</label>
+            <input type="range" id="ztrans" value="0">
+            <p></p>
+            
+            <label for="xrotate">X Rotations</label>
+            <input type="range" id="xrotate" value="0">
+            <label for="yrotate">Y Rotations</label>
+            <input type="range" id="yrotate" value="0">
+            <label for="zrotate">Z Rotations</label>
+            <input type="range" id="zrotate" value="0">
+            <p></p>
+            
+            <label for="xscale">X Scale</label>
+            <input type="range" id="xscale" value="1" min="1.0" max="2.0" step="0.1">
+            <label for="yscale">Y Scale</label>
+            <input type="range" id="yscale" value="1" min="1.0" max="2.0" step="0.1">
+            <label for="zscale">Z Scale</label>
+            <input type="range" id="zscale" value="1" min="1.0" max="2.0" step="0.1">
+            <p></p>
+            
+            <label for="xskew">X Skew</label>
+            <input type="range" id="xskew" value="1" min="0" max="180" step="10">
+            <label for="yskew">Y Skew</label>
+            <input type="range" id="yskew" value="1" min="0" max="180" step="10">
+            <label for="yskew">Z Skew</label>
+            <input type="range" id="zskew" value="1" min="0" max="180" step="10">
+            <p></p>
+
+        </body>
+</html>
