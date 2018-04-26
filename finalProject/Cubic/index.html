@@ -1,0 +1,310 @@
+<!--
+	Name: Sonny Chea
+	Date: 04-25-18
+	Professor: Dr. Haim Levkowitz
+	COM.4270 Computer Graphics I
+    Assignment: The purpose of this part for the final assignment is to complete the first part
+    which is Modeling, to create and store a 3D object by any number of these means; Drawing three
+    2D "elevations" (front, top,side) while implementing any reasonable generic object but in this
+    case its just for the house. The three.js is from a website where it has 3D javascript models.
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Comp.Graphics Final</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel=stylesheet href="css/base.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+        
+    </head>
+    <body>
+        <div class="container">
+        <!--
+            This has the tabs to the other parts of the final.
+        --> 
+        <h3>Home Page</h3>
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#">Directories</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/">Home Page</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/2D_Objects/index.html">2D Objects</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/3D_Objects/index.html">3D Objects</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/Cubic/index.html">Cubic</a></li>
+        </ul>	
+        </br>
+        <script src="js/Three.js"></script>
+        <script src="js/Detector.js"></script>
+        <script src="js/Stats.js"></script>
+        <script src="js/OrbitControls.js"></script>
+        <script src="js/THREEx.KeyboardState.js"></script>
+        <script src="js/THREEx.FullScreen.js"></script>
+        <script src="js/THREEx.WindowResize.js"></script>
+        <script src="js/libs/stats.min.js"></script>
+        <script src="js/ThreeCSG.js"></script>
+        <script type='text/javascript' src='js/DAT.GUI.min.js'></script>
+
+        <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+        <script>
+            //Modified from http://stemkoski.github.io/Three.js/GUI-Controller.html
+            //Initial variables for Three js
+            var container, scene, camera, renderer, controls, stats;
+            var keyboard = new THREEx.KeyboardState();
+            var cube;
+            var gui;
+            //Create Sceme
+            init();
+            //Render Scene
+            animate();
+
+            //Initializing and creating 3D Objects
+            function init()
+            {
+                //Setting values for the scene and camera
+                scene = new THREE.Scene();
+
+                var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+                var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+                camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+                scene.add(camera);
+                camera.position.set(0, 150, 400);
+                camera.lookAt(scene.position);
+
+                //Initializing Renderer
+                if (Detector.webgl)
+                    renderer = new THREE.WebGLRenderer({antialias: true});
+                else
+                    renderer = new THREE.CanvasRenderer();
+                renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+                container = document.getElementById('ThreeJS');
+                container.appendChild(renderer.domElement);
+
+                THREEx.WindowResize(renderer, camera);
+                //Allows viewing fullscreen by pressing m key
+                THREEx.FullScreen.bindKey({charCode: 'm'.charCodeAt(0)});
+
+                //Allows right click+drag to rotate and left click+drag to shift the camera
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+                //Creating lighting for the scene
+                var light = new THREE.PointLight(0xffffff);
+                light.position.set(0, 250, 0);
+                
+                //Creates a lightbulb object at the light source
+                var lightbulbGeometry = new THREE.SphereGeometry(10, 16, 8);
+                var lightbulbMaterial = new THREE.MeshBasicMaterial({color: 0xffff44, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending});
+                var wireMaterial = new THREE.MeshBasicMaterial({color: 0x000000, wireframe: true});
+                var materialArray = [lightbulbMaterial, wireMaterial];
+                var lightbulb = THREE.SceneUtils.createMultiMaterialObject(lightbulbGeometry, materialArray);
+                lightbulb.position = light.position;
+                scene.add(lightbulb);
+                scene.add(light);
+
+                //Creates the checkerboard floor
+                var floorTexture = new THREE.ImageUtils.loadTexture("images/wallpaper.jpg");
+                var floorMaterial = new THREE.MeshBasicMaterial({map: floorTexture, side: THREE.DoubleSide});
+                var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+                var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+                floor.position.y = -400;
+                floor.rotation.x = Math.PI / 2;
+                scene.add(floor);
+
+                //Interactive Code for rounded cube
+
+                var axes = new THREE.AxisHelper();
+                scene.add(axes);
+
+                //Code Added
+                var x = 100;
+                var y = 100;
+                var z = 100;
+
+                //Creates cube mesh with same texture as floor
+                var cubeGeometry = new THREE.CubeGeometry(x, y, z, 1, 1, 1);
+                var cubeMesh = new THREE.Mesh(cubeGeometry, floorMaterial);
+                scene.add(cubeMesh);
+                //Initialize variables for radius of vertical and horizontal Spheres
+                var v = 50;
+                var h = 50;
+                //Creates the vertical and horizontal sphere meshes
+                var sphereGeometry = new THREE.SphereGeometry(v, 32, 32);
+                var sphereMesh = new THREE.Mesh(sphereGeometry);
+
+                var sphereGeometry2 = new THREE.SphereGeometry(h, 32, 32);
+                var sphereMesh2 = new THREE.Mesh(sphereGeometry2);
+
+                //Creates the six spheres
+              /*  sphereMesh.position.set(-x / 2, 0, 0);
+                scene.add(sphereMesh);
+                var sphereMesh2 = new THREE.Mesh(sphereGeometry);
+                sphereMesh2.position.set(x / 2, 0, 0);
+                scene.add(sphereMesh2);
+                var sphereMesh3 = new THREE.Mesh(sphereGeometry2);
+                sphereMesh3.position.set(0, y / 2, 0);
+                scene.add(sphereMesh3);
+                var sphereMesh4 = new THREE.Mesh(sphereGeometry2);
+                sphereMesh4.position.set(0, -y / 2, 0);
+                scene.add(sphereMesh4);
+                var sphereMesh5 = new THREE.Mesh(sphereGeometry);
+                sphereMesh5.position.set(0, 0, z / 2);
+                scene.add(sphereMesh5);
+                var sphereMesh6 = new THREE.Mesh(sphereGeometry);
+                sphereMesh6.position.set(0, 0, -z / 2);
+                scene.add(sphereMesh6); */
+
+                //Gui for controlling the cube and spheres
+                gui = new dat.GUI();
+                //The possible input of the GUI
+                parameters =
+                        {
+                            x: 0, y: 0, z: 0,
+                            width: 1, length: 1, depth: 1,
+                            v: 1, h: 1,
+                            color: "#ff0000", // color (change "#" to "0x")
+                            opacity: 1,
+                            visible: true,
+                            material: "Phong",
+                            reset: function () {
+                                resetCube()
+                            }
+                        };
+                //Sorts the parameters in the gui
+                var folder1 = gui.addFolder('Position');
+                var cubeX = folder1.add(parameters, 'x').min(-200).max(200).step(1).listen();
+                var cubeY = folder1.add(parameters, 'y').min(-200).max(200).step(1).listen();
+                var cubeZ = folder1.add(parameters, 'z').min(-200).max(200).step(1).listen();
+
+
+                folder1.open();
+                //The following functions are for translations of the objects
+                cubeX.onChange(function (value)
+                {
+                    cubeMesh.position.x = value;
+                    sphereMesh.position.x = value + 50;
+                    sphereMesh2.position.x = value - 50;
+                    sphereMesh3.position.x = value;
+                    sphereMesh4.position.x = value;
+                    sphereMesh5.position.x = value;
+                    sphereMesh6.position.x = value;
+
+                });
+                cubeY.onChange(function (value)
+                {
+                    cubeMesh.position.y = value;
+                    sphereMesh.position.y = value;
+                    sphereMesh2.position.y = value;
+                    sphereMesh3.position.y = value + 50;
+                    sphereMesh4.position.y = value - 50;
+                    sphereMesh5.position.y = value;
+                    sphereMesh6.position.y = value;
+
+                });
+                cubeZ.onChange(function (value)
+                {
+                    cubeMesh.position.z = value;
+                    sphereMesh.position.z = value;
+                    sphereMesh2.position.z = value;
+                    sphereMesh3.position.z = value;
+                    sphereMesh4.position.z = value;
+                    sphereMesh5.position.z = value + 50;
+                    sphereMesh6.position.z = value - 50;
+
+                });
+
+                //Vary the size of the cube
+                var width = folder1.add(parameters, 'width').min(1).max(5).step(.01).listen();
+                var length = folder1.add(parameters, 'length').min(1).max(5).step(.01).listen();
+                var depth = folder1.add(parameters, 'depth').min(1).max(5).step(.01).listen();
+
+                //Functions for varying the sizes of the cube
+                width.onChange(function (value)
+                {
+                    cubeMesh.scale.x = value;
+                    sphereMesh.position.x = -(x / 2) * value;
+                    sphereMesh2.position.x = (x / 2) * value;
+                });
+                length.onChange(function (value)
+                {
+                    cubeMesh.scale.y = value;
+                    sphereMesh3.position.y = -(y / 2) * value;
+                    sphereMesh4.position.y = (y / 2) * value;
+                });
+                depth.onChange(function (value)
+                {
+                    cubeMesh.scale.z = value;
+                    sphereMesh5.position.z = -(z / 2) * value;
+                    sphereMesh6.position.z = (z / 2) * value;
+                });
+                //Functions for varying the size of the spheres
+            /*
+                var vsphere = folder1.add(parameters, 'v').min(-1).max(1).step(.001).listen();
+                vsphere.onChange(function (value)
+                {
+                    sphereMesh3.scale.x = value;
+                    sphereMesh3.scale.y = value;
+                    sphereMesh3.scale.z = value;
+                    sphereMesh4.scale.x = value;
+                    sphereMesh4.scale.y = value;
+                    sphereMesh4.scale.z = value;
+
+                });
+
+                var hsphere = folder1.add(parameters, 'h').min(-1).max(1).step(.001).listen();
+                hsphere.onChange(function (value)
+                {
+                    sphereMesh.scale.x = value;
+                    sphereMesh.scale.y = value;
+                    sphereMesh.scale.z = value;
+                    sphereMesh2.scale.x = value;
+                    sphereMesh2.scale.y = value;
+                    sphereMesh2.scale.z = value;
+                    sphereMesh5.scale.x = value;
+                    sphereMesh5.scale.y = value;
+                    sphereMesh5.scale.z = value;
+                    sphereMesh6.scale.x = value;
+                    sphereMesh6.scale.y = value;
+                    sphereMesh6.scale.z = value;
+
+
+                }); */
+
+                //Other parameters for altering the cube
+                var cubeColor = gui.addColor(parameters, 'color').name('Color').listen();
+                cubeColor.onChange(function (value) // onFinishChange
+                {
+                    cubeMesh.material.color.setHex(value.replace("#", "0x"));
+                });
+
+                var cubeOpacity = gui.add(parameters, 'opacity').min(0).max(1).step(0.01).name('Opacity').listen();
+                cubeOpacity.onChange(function (value)
+                {
+                    cubeMesh.material.opacity = value;
+                });
+            }
+
+        //Renders and updates the scene
+            function animate()
+            {
+                requestAnimationFrame(animate);
+                render();
+                update();
+            }
+
+            function update()
+            {
+                controls.update();
+                stats.update();
+            }
+
+            function render()
+            {
+                renderer.render(scene, camera);
+            }
+
+        </script>
+
+    </body>
+</html>

@@ -1,0 +1,181 @@
+<!--
+	Name: Sonny Chea
+	Date: 04-25-18
+	Professor: Dr. Haim Levkowitz
+	COM.4270 Computer Graphics I
+    Assignment: The purpose of this part for the final assignment is to complete the first part
+    which is Modeling, to create and store a 3D object by any number of these means; Drawing three
+    2D "elevations" (front, top,side) while implementing any reasonable generic object but in this
+    case its just for the house. The three.js is from a website where it has 3D javascript models.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comp.Graphics Final</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+</head>
+    <body>
+	
+	<div class="container">
+	<!--
+		This has the tabs to the other parts of the final.
+	--> 
+	<h3>Home Page</h3>
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#">Directories</a></li>
+		<li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/">Home Page</a></li>
+		<li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/2D_Objects/index.html">2D Objects</a></li>
+        <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/3D_Objects/index.html">3D Objects</a></li>
+        <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/Cubic/index.html">Cubic</a></li>
+	</ul>	
+        <label for="xtrans">X Transformation</label>
+        <input type="range" id="xtrans" value="0">
+        <label for="ytrans">Y Transformations</label>
+        <input type="range" id="ytrans" value="0">
+        <p></p>
+        <label for="xrotate">X Rotations</label>
+        <input type="range" id="xrotate" value="0">
+        <label for="yrotate">Y Rotations</label>
+        <input type="range" id="yrotate" value="0">
+        <p></p>
+        <label for="xscale">X Scale</label>
+        <input type="range" id="xscale" value="1" min="1.0" max="2.0" step="0.1">
+        <label for="yscale">Y Scale</label>
+        <input type="range" id="yscale" value="1" min="1.0" max="2.0" step="0.1">
+        <p></p>
+        <button onclick="update()">Update Changes</button>
+        <p></p>
+        <svg width="10000" height="10000" >
+            <defs>
+                <filter id="f1" x="0" y="0">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="15" />
+                </filter>
+                <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" style="stop-color:rgb(255,255,255);
+                  stop-opacity:0" />
+                  <stop offset="100%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
+                </radialGradient>
+            </defs>
+            <!--Front View             -->
+            <text x="0" y="50" fill="black">Front</text>
+            <rect id="f11" x="0" y="100" width="400" height="400" style="fill:rgb(0,0,255);
+                  stroke-width:1;stroke:rgb(0,0,0)" filter="url(#f1)">
+                  <animate attributeName="fill" attributeType="CSS" from="blue" to="purple" begin="2s" dur="10s" fill="freeze" />
+            </rect>
+            <!--Windows in Front             -->
+            <rect id="f2" x="250" y="200" width="100" height="100" fill="aqua"/>
+            <circle id="f3" cx="100" cy="250" r="50" stroke="black" stroke-width="1" fill="aqua" />
+            <line id="f4" x1="50" y1="250" x2="150" y2="250" style="stroke:black" />
+            <line id="f5" x1="100" y1="200" x2="100" y2="300" style="stroke:black" />
+            <line id="f6" x1="250" y1="250" x2="350" y2="250" style="stroke:black" />
+            <line id="f7" x1="300" y1="200" x2="300" y2="300" style="stroke:black" />
+            <!--Door             -->
+            <circle id="f8" cx="200" cy="400" r="30" fill="orange" />
+            <rect id="f9" x="170" y="400" width="60" height="100" fill="orange"/>
+            
+            <polygon id="f10" points="0,100 400,100 200,0" style="fill:lime;stroke:purple;stroke-width:1" filter="url(#f1)">
+                <animate attributeName="fill" attributeType="CSS" from="lime" to="orange" begin="2s" dur="10s" fill="freeze" />
+            </polygon>
+            <!--Side View            -->
+            <text id="s1" x="500" y="50" fill="black">Side</text>
+            <rect id="s2" x="500" y="100" width="400" height="400" style="fill:blue;
+                  stroke-width:1;stroke:rgb(0,0,0)" filter="url(#f1)">
+                  <animate attributeName="fill" attributeType="CSS" from="blue" to="purple" begin="2s" dur="10s" fill="freeze" />
+            </rect>
+            <polygon id="s3" points="500,100 900,100 700,0" style="fill:lime;stroke:purple;stroke-width:1" filter="url(#f1)">
+                <animate attributeName="fill" attributeType="CSS" from="lime" to="orange" begin="2s" dur="10s" fill="freeze" />
+            </polygon>
+            <rect id="s4" x="650" y="200" width="100" height="100" fill="aqua"/>
+            <line id="s5" x1="650" y1="250" x2="750" y2="250" style="stroke:black" />
+            <line id="s6" x1="700" y1="200" x2="700" y2="300" style="stroke:black" />
+            <!--Top View           -->
+            <text x="0" y="600" fill="black">Top</text>
+            <rect id="t1" x="0" y="650" width="400" height="400" style="fill:lime;
+                  stroke-width:1;stroke:rgb(0,0,0)" filter="url(#f1)">
+                <animate attributeName="fill" attributeType="CSS" from="lime" to="orange" begin="2s" dur="10s" fill="freeze" />
+            </rect>
+            <line id="t2" x1="0" y1="650" x2="400" y2="1050" style="stroke:black" />
+            <line id="t3" x1="400" y1="650" x2="0" y2="1050" style="stroke:black" />
+        </svg>
+        
+        
+
+        <script>
+            
+        
+            function update(){
+                var T = "translate("+document.getElementById("xtrans").value+","+document.getElementById("ytrans").value+")";
+                var xR = "rotate("+document.getElementById("xrotate").value+")";
+                var yR = "rotate("+document.getElementById("yrotate").value+")";
+                var yT = "translate("+0+","+document.getElementById("ytrans").value+")";
+                var xT = "translate("+document.getElementById("xtrans").value+","+0+")";
+
+                var S = "scale("+document.getElementById("xscale").value+","+document.getElementById("yscale").value+")";
+
+                //Transformations + Rotations + Scale
+                document.getElementById("f11").setAttribute("transform",T+xR+S);
+                document.getElementById("f2").setAttribute("transform",T+xR+S);
+                document.getElementById("f3").setAttribute("transform",T+xR+S);
+                document.getElementById("f4").setAttribute("transform",T+xR+S);
+                document.getElementById("f5").setAttribute("transform",T+xR+S);
+                document.getElementById("f6").setAttribute("transform",T+xR+S);
+                document.getElementById("f7").setAttribute("transform",T+xR+S);
+                document.getElementById("f8").setAttribute("transform",T+xR+S);
+                document.getElementById("f9").setAttribute("transform",T+xR+S);
+                document.getElementById("f10").setAttribute("transform",T+xR+S);
+                             
+                document.getElementById("s1").setAttribute("transform",yT+yR);
+                document.getElementById("s2").setAttribute("transform",yT+yR);
+                document.getElementById("s3").setAttribute("transform",yT+yR);
+                document.getElementById("s4").setAttribute("transform",yT+yR);
+                document.getElementById("s5").setAttribute("transform",yT+yR);
+                document.getElementById("s6").setAttribute("transform",yT+yR);
+                
+                document.getElementById("t1").setAttribute("transform",xT+S);
+                document.getElementById("t2").setAttribute("transform",xT+S);
+                document.getElementById("t3").setAttribute("transform",xT+S);
+                
+            }
+            function skew(){
+                var Sk = "skew("+document.getElementById("xskew").value+"deg"+","+document.getElementById("yskew").value+"deg"+")";
+                var Skx = "skew("+document.getElementById("xskew").value+"deg"+")";
+                var Sky = "skew("+0+"deg"+","+document.getElementById("yskew").value+"deg"+")";
+
+                document.getElementById("f11").style.WebkitTransform = Sk;
+                document.getElementById("f2").style.WebkitTransform = Sk;
+                document.getElementById("f3").style.WebkitTransform = Sk;
+                document.getElementById("f4").style.WebkitTransform = Sk;
+                document.getElementById("f5").style.WebkitTransform = Sk;
+                document.getElementById("f6").style.WebkitTransform = Sk;
+                document.getElementById("f7").style.WebkitTransform = Sk;
+                document.getElementById("f8").style.WebkitTransform = Sk;
+                document.getElementById("f9").style.WebkitTransform = Sk;
+                document.getElementById("f10").style.WebkitTransform = Sk;
+
+                document.getElementById("s1").style.WebkitTransform = Sky;
+                document.getElementById("s2").style.WebkitTransform = Sky;
+                document.getElementById("s3").style.WebkitTransform = Sky;
+                document.getElementById("s4").style.WebkitTransform = Sky;
+                document.getElementById("s5").style.WebkitTransform = Sky;
+                document.getElementById("s6").style.WebkitTransform = Sky;
+
+                document.getElementById("t1").style.WebkitTransform = Skx;
+                document.getElementById("t2").style.WebkitTransform = Skx;
+                document.getElementById("t3").style.WebkitTransform = Skx;
+
+                //document.getElementById("debugger").innerHTML = S;
+
+            }
+            
+       </script>
+       <p></p>
+       <p id="debugger"> </p>       
+        <div></div>
+    </body>
+</html>
