@@ -1,0 +1,268 @@
+<!--
+	Name: Sonny Chea
+	Date: 04-25-18
+	Professor: Dr. Haim Levkowitz
+	COMP.4270 Computer Graphics I
+    Assignment: The purpose of this part for the final assignment is to complete the first part
+    which is Modeling, to create and store a 3D object by any number of these means; Drawing three
+    2D "elevations" (front, top,side) while implementing any reasonable generic object but in this
+    case its just for the house. The three.js is from a website where it has 3D javascript models.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comp.Graphics Final</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="js/three.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+    </head>
+    
+    <body>
+        <div class="container">
+        <!--
+            This has the tabs to the other parts of the final.
+        --> 
+        <h3>COMP.4270 Computer Graphics I</h3>
+        <ul class="nav nav-tabs">
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/">Home Page</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/2D_Objects/index.html">2D Objects</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/3D_Objects/index.html">3D Objects</a></li>
+            <li><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/Cubic/index.html">Cubic</a></li>
+            <li class="active"><a href="http://www.cs.uml.edu/~schea/427546s2018/finalProject/finalProject/Mapping/index.html">Mapping</a></li>
+        </ul>
+        <div id="webgl-container"></div>
+        <label for="v">v:</label>
+        <input type="number" id="v" value="1" style="width: 40px">
+        <label for="h">h:</label>
+        <input type="number" id="h" value="1" style="width: 40px">
+        <label for="t">t:</label>
+        <input type="number" id="t" value="1" style="width: 40px">
+        
+        <label for="xscale">xscale:</label>
+        <input type="number" id="xscale" value="1" style="width: 40px">
+        <label for="yscale">yscale:</label>
+        <input type="number" id="yscale" value="1" style="width: 40px">
+        <label for="zscale">zscale:</label>
+        <input type="number" id="zscale" value="1" style="width: 40px">
+
+        <button onclick="drawRect()">Draw Map Button</button>
+
+        <script>
+            //Intro tutorial that showed how to make a basic box in 3js.
+            //Used for reference to make my own.
+            //https://bl.ocks.org/mpmckenna8/2ca083e8e777354d3cf8
+            
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,1,1000);
+            var renderer = new THREE.WebGLRenderer();
+
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            // tried this a little different from the example in docs
+            document.getElementById("webgl-container").appendChild(renderer.domElement);
+
+            function drawRect(){
+                
+                //While loop taken from this page to learn how to clear existing
+                //Objects in a scene before redrawing.
+                //http://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene
+                while(scene.children.length > 0){ 
+                    scene.remove(scene.children[0]); 
+                }
+                
+                //Add a big sphere to give a colorful background.
+                var geomBig = new THREE.SphereGeometry(100, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+                var materialBig = new THREE.MeshNormalMaterial();
+                var Bigsphere = new THREE.Mesh(geomBig, materialBig);
+                scene.add(Bigsphere);
+                
+                //  CubeGeometry
+                var Xs = +document.getElementById("xscale").value;
+                var Ys = +document.getElementById("yscale").value;
+                var Zs = +document.getElementById("zscale").value;
+                
+                var geometry = new THREE.BoxGeometry(5*Xs,5*Ys,5*Zs);
+                var material = new THREE.MeshBasicMaterial( { map: new THREE.ImageUtils.loadTexture("Test/Wall.JPG") } );      //material.side = THREE.DoubleSide;
+                var cube = new THREE.Mesh(geometry,material);
+                scene.add(cube);
+                var ambientLight = new THREE.AmbientLight(0x101010, 1.0); 
+                scene.add(ambientLight); 
+                
+                //Draw all of the spheres to go with it.
+                var radius = 2.5;
+                var geom = new THREE.SphereGeometry(radius*document.getElementById("v").value, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+                var geom2 = new THREE.SphereGeometry(radius*document.getElementById("h").value, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+                var geom3 = new THREE.SphereGeometry(radius*document.getElementById("t").value, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+                
+                var material2 = new THREE.MeshNormalMaterial();
+                var sphere = new THREE.Mesh(geom, material);
+                var sphere3 = new THREE.Mesh(geom, material);
+                var sphere2 = new THREE.Mesh(geom2, material);
+                var sphere4 = new THREE.Mesh(geom2, material);
+                var sphere5 = new THREE.Mesh(geom3, material);
+                var sphere6 = new THREE.Mesh(geom3, material);
+                sphere.position.set( 0, 2.5*Ys, 0 );
+                scene.add(sphere);
+                sphere2.position.set( 2.5*Xs, 0, 0 );
+                scene.add(sphere2);
+                sphere3.position.set( 0, -2.5*Ys, 0 );
+                scene.add(sphere3);
+                sphere4.position.set( -2.5*Xs, 0, 0 );
+                scene.add(sphere4);
+                sphere5.position.set( 0, 0, -2.0*Zs );
+                scene.add(sphere5);
+                sphere6.position.set( 0, 0, 2.0*Zs );
+                scene.add(sphere6);
+                
+            }
+
+            var container, scene, camera, renderer, controls;
+            function drawFunction(){
+                var geomBig = new THREE.SphereGeometry(100, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+                var materialBig = new THREE.MeshNormalMaterial();
+                var Bigsphere = new THREE.Mesh(geomBig, materialBig);
+                scene.add(Bigsphere);
+                init();
+                initGraph();
+            }
+           
+            //This code is coppied from the github below.
+            //The only changes is the function being drawn was changed.
+            //And that I added a volume counter to show the area under
+            //the function.
+            //https://gist.github.com/domitry/10023888            
+            function initData(){
+                var BIGIN=-10, END=10;
+                var data = new Array();
+                for(var x=BIGIN;x<END;x++){
+                    var row = [];
+                    for(var y=BIGIN;y<END;y++){
+                        z = 2.5*(Math.tan(Math.sqrt(x*x+y*y))+2);
+                        row.push({x: x, y: y, z: z});
+                    }
+                    data.push(row);
+                }
+                return data;
+            }
+            
+            //This function creates lights to illumminate the area.
+            function init(){
+
+                var positions = [[1,1,1],[-1,-1,1],[-1,1,1],[1,-1,1]];
+                for(var i=0;i<4;i++){
+                    var light=new THREE.DirectionalLight(0xdddddd);
+                    light.position.set(positions[i][0],positions[i][1],0.4*positions[i][2]);
+                    scene.add(light);
+                }
+                initGrid();
+            }
+            
+            //This adds all of the lines that make the bottom plane grid.
+            function initGrid(){
+                var BIGIN=-10, END=10, WIDTH=END-BIGIN;
+                var plane_geometry = new THREE.PlaneGeometry(WIDTH,WIDTH);
+                var plane_material = new THREE.MeshLambertMaterial({color:0xf0f0f0, shading: THREE.FlatShading, overdraw: 0.5, side: THREE.DoubleSide});
+                var plane = new THREE.Mesh(plane_geometry, plane_material);
+                scene.add(plane);
+
+                var geometry = new THREE.Geometry();
+
+                for(var i=BIGIN;i<=END;i+=2){
+                    geometry.vertices.push(new THREE.Vector3(BIGIN,i,0));
+                    geometry.vertices.push(new THREE.Vector3(END,i,0));
+                    geometry.vertices.push(new THREE.Vector3(i,BIGIN,0));
+                    geometry.vertices.push(new THREE.Vector3(i,END,0));
+                }
+
+                var material = new THREE.LineBasicMaterial( { color: 0x999999, opacity: 0.2 } );
+
+                var line = new THREE.Line(geometry, material);
+                line.type = THREE.LinePieces;
+                scene.add(line);
+
+
+            }
+            
+            //This function takes the points from the data and adds them to a
+            //geometry that is then added to the scene.
+            function initGraph(){
+                var volume = 0.0;
+                data = initData();
+                var geometry = new THREE.Geometry();
+                var colors = [];
+
+                var width = data.length, height = data[0].length;
+                data.forEach(function(col){
+                    col.forEach(function(val){
+                        geometry.vertices.push(new THREE.Vector3(val.x,val.y,val.z));
+                        colors.push(getColor(2.5,0,val.z));
+                        document.getElementById("Vol").innerHTML = "Volume of Plane="+val.z;
+                        volume += val.z + 0.0;
+                    });
+                });
+
+                document.getElementById("Vol").innerHTML = "Volume of Plane="+volume;
+
+                var offset = function(x,y){
+                    return x*width+y;
+                };
+
+                for(var x=0;x<width-1;x++){
+                    for(var y=0;y<height-1;y++){
+                        var vec0 = new THREE.Vector3(), vec1 = new THREE.Vector3(), n_vec = new THREE.Vector3();
+                        // one of two triangle polygons in one rectangle
+                        vec0.subVectors(geometry.vertices[offset(x,y)],geometry.vertices[offset(x+1,y)]);
+                        vec1.subVectors(geometry.vertices[offset(x,y)],geometry.vertices[offset(x,y+1)]); 
+                        n_vec.crossVectors(vec0,vec1).normalize();
+                        geometry.faces.push(new THREE.Face3(offset(x,y),offset(x+1,y),offset(x,y+1), n_vec, [colors[offset(x,y)],colors[offset(x+1,y)],colors[offset(x,y+1)]]));
+                        geometry.faces.push(new THREE.Face3(offset(x,y),offset(x,y+1),offset(x+1,y), n_vec.negate(), [colors[offset(x,y)],colors[offset(x,y+1)],colors[offset(x+1,y)]]));
+                        // the other one
+                        vec0.subVectors(geometry.vertices[offset(x+1,y)],geometry.vertices[offset(x+1,y+1)]);
+                        vec1.subVectors(geometry.vertices[offset(x,y+1)],geometry.vertices[offset(x+1,y+1)]); 
+                        n_vec.crossVectors(vec0,vec1).normalize();
+                        geometry.faces.push(new THREE.Face3(offset(x+1,y),offset(x+1,y+1),offset(x,y+1), n_vec, [colors[offset(x+1,y)],colors[offset(x+1,y+1)],colors[offset(x,y+1)]]));
+                        geometry.faces.push(new THREE.Face3(offset(x+1,y),offset(x,y+1),offset(x+1,y+1), n_vec.negate(), [colors[offset(x+1,y)],colors[offset(x,y+1)],colors[offset(x+1,y+1)]]));
+                    }
+                }
+
+                var material = new THREE.MeshLambertMaterial({ vertexColors: THREE.VertexColors});
+                var mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+            }            
+
+            function getColor(max,min,val){
+                var MIN_L=40,MAX_L=100;
+                var color = new THREE.Color();
+                var h = 0/240;
+                var s = 80/240;
+                var l = (((MAX_L-MIN_L)/(max-min))*val)/240;
+                color.setHSL(h,s,l);
+                return color;
+            }
+            //-----------------------------------------------------------
+            //End of code from the github at the beginning of this section
+
+            //Function to move around the camera in sinosoidal ways.
+            function render (){
+                requestAnimationFrame(render);
+                var timer = Date.now() * 0.0001;
+
+                //Insight for using cos and sin to rotate camera came from here
+                //https://gamedev.stackexchange.com/questions/74155/what-function-creates-rotation-effect-in-three-js
+
+                camera.position.x = Math.cos( timer ) * 30;
+                camera.position.z = Math.sin( timer ) * 30;
+                camera.position.y = Math.tan( timer ) * 10;
+                
+                camera.lookAt( scene.position );
+
+                renderer.render(scene,camera);
+            }
+            render();
+            
+        </script>
+    </body>
+</html>
